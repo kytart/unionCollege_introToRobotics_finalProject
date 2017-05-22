@@ -14,7 +14,7 @@ def init():
 	pub = rospy.Publisher('/dogbot/voice_command', String, queue_size=10)
 	rate = rospy.Rate(1)
 
-	microphone_sensitivity = rospy.get_param('mic_sensitivity', DEFAULT_MIC_SENSITIVITY)
+	microphone_sensitivity = rospy.get_param('~mic_sensitivity', DEFAULT_MIC_SENSITIVITY)
 	print 'Microphone sensitivity: {}'.format(microphone_sensitivity)
 
 	recognizer = sr.Recognizer()
