@@ -4,6 +4,8 @@ import rospy
 import speech_recognition as sr
 from std_msgs.msg import String
 
+DEFAULT_MIC_SENSITIVITY = 300
+
 GOOGLE_API_CREDENTIALS_JSON_PATH = os.path.join(os.path.dirname(os.path.realpath(__file__)), '../google_api_credentials.json')
 
 
@@ -12,6 +14,9 @@ def init():
 	pub = rospy.Publisher('/dogbot/voice_command', String, queue_size=10)
 	rate = rospy.Rate(1)
 	recognizer = sr.Recognizer()
+
+	microphone_sensitivity = rospy.get_param('mic_sensitivity', DEFAULT_MIC_SENSITIVITY)
+	print 'Microphone sensitivity: ' + microphone_sensitivity
 
 	with open(GOOGLE_API_CREDENTIALS_JSON_PATH, 'r') as credentialsFile:
 		google_api_credentials = credentialsFile.read()
