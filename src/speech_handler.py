@@ -13,10 +13,12 @@ def init():
 	rospy.init_node('dogbotVoiceRecognizer', anonymous=True)
 	pub = rospy.Publisher('/dogbot/voice_command', String, queue_size=10)
 	rate = rospy.Rate(1)
-	recognizer = sr.Recognizer()
 
 	microphone_sensitivity = rospy.get_param('mic_sensitivity', DEFAULT_MIC_SENSITIVITY)
-	print 'Microphone sensitivity: ' + microphone_sensitivity
+	print 'Microphone sensitivity: {}'.format(microphone_sensitivity)
+
+	recognizer = sr.Recognizer()
+	recognizer.energy_threshold = microphone_sensitivity
 
 	with open(GOOGLE_API_CREDENTIALS_JSON_PATH, 'r') as credentialsFile:
 		google_api_credentials = credentialsFile.read()
