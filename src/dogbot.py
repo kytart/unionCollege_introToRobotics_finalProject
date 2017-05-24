@@ -53,7 +53,7 @@ def move(distance, is_forward):
 
 
 def rotate(relative_angle, is_clockwise):
-	speed = 0.2
+	speed = 1.0
 	current_angle = None
 	rate = rospy.Rate(10)
 	listener = tf.TransformListener()
@@ -99,19 +99,20 @@ def roll():
 
 
 def perform_command(command):
-	print 'command "{}"'.format(command)
+	print 'command "{}"'.format(command.data)
 
-	if command == COMMAND_ROLL:
+	if command.data == COMMAND_ROLL:
 		roll()
-	elif command == COMMAND_DANCE:
+	elif command.data == COMMAND_DANCE:
 		dance()
 	else:
-		print 'Unrecognized command "{}"'.format(command)
+		print 'Unrecognized command "{}"'.format(command.data)
 
 
 def init():
 	rospy.init_node('dogbot', anonymous=True)
 	rospy.Subscriber("/dogbot/voice_command", String, perform_command)
+	rospy.spin()
 
 
 if __name__ == '__main__':
