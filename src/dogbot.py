@@ -3,6 +3,10 @@ import math
 import rospy
 import tf
 from geometry_msgs.msg import Twist
+from std_msgs.msg import String
+
+COMMAND_ROLL = 'roll'
+COMMAND_DANCE = 'dance'
 
 pub = rospy.Publisher('/cmd_vel_mux/input/teleop', Twist, queue_size=10)
 
@@ -83,18 +87,32 @@ def rotate(relative_angle, is_clockwise):
 	rate.sleep()
 
 
-def make_square(size):
-	move(size, True)
-	rotate(math.radians(90.0), True)
-	move(size, True)
-	rotate(math.radians(90.0), True)
-	move(size, True)
-	rotate(math.radians(90.0), True)
-	move(size, True)
+def dance():
+	rotate(30.0, True)
+	rotate(60.0, False)
+	rotate(30.0, True)
+
+
+def roll():
+	rotate(180.0, True)
+	rotate(180.0, True)
+
+
+def perform_command(command):
+	print 'command "{}"'.format(command)
+
+	if command == COMMAND_ROLL:
+		roll()
+	elif command == COMMAND_DANCE:
+		dance()
+	else:
+		print 'Unrecognized command "{}"'.format(command)
 
 
 def init():
 	rospy.init_node('dogbot', anonymous=True)
+	rospy.Subscriber("/dogbot/voice_command", String, perform_command)
+
 
 if __name__ == '__main__':
 	init()
