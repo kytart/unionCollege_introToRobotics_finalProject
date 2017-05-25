@@ -5,8 +5,10 @@ import tf
 from geometry_msgs.msg import Twist
 from std_msgs.msg import String
 
-COMMAND_ROLL = 'roll'
-COMMAND_DANCE = 'dance'
+COMMAND_TURN_AROUND = 'turn around'
+COMMAND_GOOD_BOY = 'good boy'
+COMMAND_COME_HERE = 'come here'
+COMMAND_GO_AWAY = 'go away'
 
 pub = rospy.Publisher('/cmd_vel_mux/input/teleop', Twist, queue_size=10)
 
@@ -70,11 +72,14 @@ def rotate(relative_angle, is_clockwise):
 				current_angle = 0
 				start = rot_radians
 			else:
-				current_angle = abs(rot_radians - start)
+				current_angle = math.degrees(abs(rot_radians - start)) % 360
 		except (tf.LookupException, tf.ConnectivityException, tf.ExtrapolationException):
 			continue
 
-		print 'current angle: {}'.format(math.degrees(current_angle))
+		print 'start: {}'.format(math.degrees(start))
+		print 'current: {}'.format(math.degrees(rot_radians))
+		print 'current angle: {}'.format(current_angle)
+		print '=========================='
 
 		if current_angle >= relative_angle:
 			break
@@ -87,24 +92,38 @@ def rotate(relative_angle, is_clockwise):
 	rate.sleep()
 
 
-def dance():
-	rotate(30.0, True)
-	rotate(60.0, False)
-	rotate(30.0, True)
+def dance(radius):
+	rotate(radius, True)
+	rotate(radius * 2, False)
+	rotate(radius * 2, True)
+	rotate(radius * 2, False)
+	rotate(radius, True)
 
 
-def roll():
+def turn_around():
 	rotate(180.0, True)
 	rotate(180.0, True)
+
+
+def come_here():
+	move(1.0, True)
+
+
+def go_away():
+	move(1.0, False)
 
 
 def perform_command(command):
 	print 'command "{}"'.format(command.data)
 
-	if command.data == COMMAND_ROLL:
-		roll()
-	elif command.data == COMMAND_DANCE:
-		dance()
+	if command.data == COMMAND_TURN_AROUND:
+		turn_around()
+	elif command.data == COMMAND_GOOD_BOY:
+		dance(10.0)
+	elif command.data == COMMAND_COME_HERE:
+		come_here()
+	elif command.data == COMMAND_GO_AWAY:
+		go_away()
 	else:
 		print 'Unrecognized command "{}"'.format(command.data)
 

@@ -25,10 +25,10 @@ def init():
 
 	with sr.Microphone() as source:
 		while not rospy.is_shutdown():
-			print 'Say something...'
-			audio = recognizer.listen(source)
-			print 'Got it! Processing...'
 			try:
+				print 'Say something...'
+				audio = recognizer.listen(source, timeout=2)
+				print 'Got it! Processing...'
 				phrase = recognizer.recognize_google_cloud(audio, credentials_json=google_api_credentials).strip()
 				print 'I think you said: "' + phrase + '"'
 				pub.publish(phrase)
@@ -38,6 +38,9 @@ def init():
 			except sr.RequestError as e:
 				print 'Could not request results from Google Cloud Speech service; {0}'.format(e)
 				rospy.logerr('Could not request results from Google Cloud Speech service; {0}'.format(e))
+			except sr.WaitTimeoutError as e:
+				print e.message
+				rospy.logerr(e.message)
 			rate.sleep()
 
 
