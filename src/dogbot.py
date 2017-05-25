@@ -4,6 +4,7 @@ import rospy
 import tf
 from geometry_msgs.msg import Twist
 from std_msgs.msg import String
+from emotions import HAPPY, SAD, EXCITED, MUSIC
 
 COMMAND_TURN_AROUND = 'turn around'
 COMMAND_GOOD_BOY = 'good boy'
@@ -13,7 +14,8 @@ COMMAND_COME_BACK = 'come back'
 COMMAND_SHAKE_IT = 'shake it'
 COMMAND_SHAKE_THAT_BOOTY = 'shake that booty'
 
-pub = rospy.Publisher('/cmd_vel_mux/input/teleop', Twist, queue_size=10)
+pubMove = rospy.Publisher('/cmd_vel_mux/input/teleop', Twist, queue_size=10)
+pubEmotion = rospy.Publisher('/dogbot/emotion', String, queue_size=10)
 
 
 def calculate_distance(x1, x0, y1, y0):
@@ -49,16 +51,15 @@ def move(distance, is_forward):
 		if current_distance >= distance:
 			break
 
-		pub.publish(out_data)
+		pubMove.publish(out_data)
 		rate.sleep()
 
 	out_data.linear.x = 0.0
-	pub.publish(out_data)
+	pubMove.publish(out_data)
 	rate.sleep()
 
 
-def rotate(relative_angle, is_clockwise):
-	speed = 2.0
+def rotate(relative_angle, is_clockwise, speed=1.0):
 	current_angle = None
 	rate = rospy.Rate(10)
 	listener = tf.TransformListener()
@@ -87,20 +88,20 @@ def rotate(relative_angle, is_clockwise):
 		if current_angle >= relative_angle:
 			break
 
-		pub.publish(out_data)
+		pubMove.publish(out_data)
 		rate.sleep()
 
 	out_data.angular.z = 0.0
-	pub.publish(out_data)
+	pubMove.publish(out_data)
 	rate.sleep()
 
 
 def dance(radius):
-	rotate(radius, True)
-	rotate(radius * 2, False)
-	rotate(radius * 2, True)
-	rotate(radius * 2, False)
-	rotate(radius, True)
+	rotate(radius, True, 2.5)
+	rotate(radius * 2, False, 2.5)
+	rotate(radius * 2, True, 2.5)
+	rotate(radius * 2, False, 2.5)
+	rotate(radius, True, 2.5)
 
 
 def turn_around():
@@ -117,16 +118,25 @@ def perform_command(command):
 	print 'command "{}"'.format(command.data)
 
 	if command.data == COMMAND_TURN_AROUND:
+		pubEmotion.publish(EXCITED)
 		rotate(180.0, True)
 		rotate(180.0, True)
 	elif command.data == COMMAND_GOOD_BOY:
+		pubEmotion.publish(HAPPY)
 		dance(5.0)
 	elif command.data == COMMAND_COME_HERE:
+		pubEmotion.publish(EXCITED)
 		move(1.0, True)
-	elif command.data == COMMAND_GO_AWAY or command.data == COMMAND_COME_BACK:
+	elif command.data == COMMAND_GO_AWAY:
+		pubEmotion.publish(SAD)
+		rotate(180.0, True)
+		move(1.0, True)
+	elif command.data == COMMAND_COME_BACK:
+		pubEmotion.publish(HAPPY)
 		rotate(180.0, True)
 		move(1.0, True)
 	elif command.data == COMMAND_SHAKE_IT or command.data == COMMAND_SHAKE_THAT_BOOTY:
+		pubEmotion.publish(MUSIC)
 		dance(5.0)
 		dance(5.0)
 	else:
