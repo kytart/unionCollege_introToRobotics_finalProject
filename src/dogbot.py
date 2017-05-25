@@ -58,7 +58,7 @@ def move(distance, is_forward):
 
 
 def rotate(relative_angle, is_clockwise):
-	speed = 1.0
+	speed = 2.0
 	current_angle = None
 	rate = rospy.Rate(10)
 	listener = tf.TransformListener()
@@ -120,15 +120,15 @@ def perform_command(command):
 		rotate(180.0, True)
 		rotate(180.0, True)
 	elif command.data == COMMAND_GOOD_BOY:
-		dance(10.0)
+		dance(5.0)
 	elif command.data == COMMAND_COME_HERE:
 		move(1.0, True)
 	elif command.data == COMMAND_GO_AWAY or command.data == COMMAND_COME_BACK:
 		rotate(180.0, True)
 		move(1.0, True)
 	elif command.data == COMMAND_SHAKE_IT or command.data == COMMAND_SHAKE_THAT_BOOTY:
-		dance(20.0)
-		dance(20.0)
+		dance(5.0)
+		dance(5.0)
 	else:
 		print 'Unrecognized command "{}"'.format(command.data)
 
