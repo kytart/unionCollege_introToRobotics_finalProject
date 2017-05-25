@@ -9,6 +9,9 @@ COMMAND_TURN_AROUND = 'turn around'
 COMMAND_GOOD_BOY = 'good boy'
 COMMAND_COME_HERE = 'come here'
 COMMAND_GO_AWAY = 'go away'
+COMMAND_COME_BACK = 'come back'
+COMMAND_SHAKE_IT = 'shake it'
+COMMAND_SHAKE_THAT_BOOTY = 'shake that booty'
 
 pub = rospy.Publisher('/cmd_vel_mux/input/teleop', Twist, queue_size=10)
 
@@ -105,11 +108,8 @@ def turn_around():
 	rotate(180.0, True)
 
 
-def come_here():
-	move(1.0, True)
-
-
-def go_away():
+def turn_and_go():
+	rotate(90.0, True)
 	move(1.0, False)
 
 
@@ -117,13 +117,18 @@ def perform_command(command):
 	print 'command "{}"'.format(command.data)
 
 	if command.data == COMMAND_TURN_AROUND:
-		turn_around()
+		rotate(180.0, True)
+		rotate(180.0, True)
 	elif command.data == COMMAND_GOOD_BOY:
 		dance(10.0)
 	elif command.data == COMMAND_COME_HERE:
-		come_here()
-	elif command.data == COMMAND_GO_AWAY:
-		go_away()
+		move(1.0, True)
+	elif command.data == COMMAND_GO_AWAY or command.data == COMMAND_COME_BACK:
+		rotate(180.0, True)
+		move(1.0, True)
+	elif command.data == COMMAND_SHAKE_IT or command.data == COMMAND_SHAKE_THAT_BOOTY:
+		dance(20.0)
+		dance(20.0)
 	else:
 		print 'Unrecognized command "{}"'.format(command.data)
 
