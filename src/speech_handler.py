@@ -29,7 +29,7 @@ def init():
 			audio = recognizer.listen(source)
 			print 'Got it! Processing...'
 			try:
-				phrase = recognizer.recognize_google_cloud(audio, credentials_json=google_api_credentials)
+				phrase = recognizer.recognize_google_cloud(audio, credentials_json=google_api_credentials).strip()
 				print 'I think you said: "' + phrase + '"'
 				pub.publish(phrase)
 			except sr.UnknownValueError:
