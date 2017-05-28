@@ -1,0 +1,7 @@
+<launch>
+    <node name="dogbot" pkg="dogbot" type="dogbot.py" output="screen"/>
+    <node name="dogbot_speech_handler" pkg="dogbot" type="speech_handler.py">
+        <param name="mic_sensitivity" type="int" value="3000"/>
+    </node>
+    <node name="dogbot_emotions" pkg="dogbot" type="emotions.py" output="screen" required="false"/>
+</launch>
