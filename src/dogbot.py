@@ -43,11 +43,6 @@ def move(distance, is_forward):
 		except (tf.LookupException, tf.ConnectivityException, tf.ExtrapolationException):
 			continue
 
-		print 'start: {}'.format(start)
-		print 'current: {}'.format(trans)
-		print 'distance: {}'.format(current_distance)
-		print '=========================='
-
 		if current_distance >= distance:
 			break
 
@@ -80,11 +75,6 @@ def rotate(relative_angle, is_clockwise, speed=1.0):
 		except (tf.LookupException, tf.ConnectivityException, tf.ExtrapolationException):
 			continue
 
-		print 'start: {}'.format(math.degrees(start))
-		print 'current: {}'.format(math.degrees(rot_radians))
-		print 'current angle: {}'.format(current_angle)
-		print '=========================='
-
 		if current_angle >= relative_angle:
 			break
 
@@ -115,8 +105,6 @@ def turn_and_go():
 
 
 def perform_command(command):
-	print 'command "{}"'.format(command.data)
-
 	if command.data == COMMAND_TURN_AROUND:
 		pubEmotion.publish(EXCITED)
 		rotate(180.0, True)

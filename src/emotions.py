@@ -33,8 +33,6 @@ def play(file):
 
 
 def express_emotion(emotion):
-	print 'emotion: "{}"'.format(emotion.data)
-
 	if emotion.data == HAPPY:
 		play('happy_dog.wav')
 	elif emotion.data == SAD:
