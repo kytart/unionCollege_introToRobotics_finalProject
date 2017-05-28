@@ -42,7 +42,7 @@ def express_emotion(emotion):
 	elif emotion.data == MUSIC:
 		play('dance_dog.wav')
 	else:
-		print 'unrecognized emotion "{}"'.format(emotion.data)
+		rospy.logerr('unrecognized emotion "%s"', emotion.data)
 
 
 def init():

@@ -128,7 +128,7 @@ def perform_command(command):
 		dance(5.0)
 		dance(5.0)
 	else:
-		print 'Unrecognized command "{}"'.format(command.data)
+		rospy.logerr('Unrecognized command "%s"', command.data)
 
 
 def init():

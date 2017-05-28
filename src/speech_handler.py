@@ -15,7 +15,6 @@ def init():
 	rate = rospy.Rate(1)
 
 	microphone_sensitivity = rospy.get_param('~mic_sensitivity', DEFAULT_MIC_SENSITIVITY)
-	print 'Microphone sensitivity: {}'.format(microphone_sensitivity)
 
 	recognizer = sr.Recognizer()
 	recognizer.energy_threshold = microphone_sensitivity
@@ -26,20 +25,15 @@ def init():
 	with sr.Microphone() as source:
 		while not rospy.is_shutdown():
 			try:
-				print 'Say something...'
 				audio = recognizer.listen(source, timeout=2)
-				print 'Got it! Processing...'
 				phrase = recognizer.recognize_google_cloud(audio, credentials_json=google_api_credentials).strip()
-				print 'I think you said: "' + phrase + '"'
+				rospy.logdebug('Speech recognized: "%s"', phrase)
 				pub.publish(phrase)
 			except sr.UnknownValueError:
-				print 'Google Cloud Speech could not understand audio'
 				rospy.logerr('Google Cloud Speech could not understand audio')
 			except sr.RequestError as e:
-				print 'Could not request results from Google Cloud Speech service; {0}'.format(e)
 				rospy.logerr('Could not request results from Google Cloud Speech service; {0}'.format(e))
 			except sr.WaitTimeoutError as e:
-				print e.message
 				rospy.logerr(e.message)
 			rate.sleep()
 
