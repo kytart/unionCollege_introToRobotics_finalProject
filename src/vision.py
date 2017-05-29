@@ -97,7 +97,7 @@ class image_converter:
 			cv2.line(frame, pts[i - 1], pts[i], (0, 0, 255), thickness)
 
 		# show the frame to our screen
-		cv2.imshow("Frame", frame)
+		# cv2.imshow("Frame", frame)
 		# key = cv2.waitKey(1) & 0xFF
 
 		# cv2.imshow("Image window", cv_image)
