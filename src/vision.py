@@ -82,32 +82,32 @@ class image_converter:
 				self.y_pub.publish(int(y) - 200)
 				self.radius_pub.publish(int(radius))
 
-			# update the points queue
+		# update the points queue
 		pts.appendleft(center)
 
-	# loop over the set of tracked points
-	for i in xrange(1, len(pts)):
-		# if either of the tracked points are None, ignore
-		# them
-		if pts[i - 1] is None or pts[i] is None:
-			continue
+		# loop over the set of tracked points
+		for i in xrange(1, len(pts)):
+			# if either of the tracked points are None, ignore
+			# them
+			if pts[i - 1] is None or pts[i] is None:
+				continue
 
-		# otherwise, compute the thickness of the line and
-		# draw the connecting lines
-		thickness = int(np.sqrt(args["buffer"] / float(i + 1)) * 2.5)
-		cv2.line(frame, pts[i - 1], pts[i], (0, 0, 255), thickness)
+			# otherwise, compute the thickness of the line and
+			# draw the connecting lines
+			thickness = int(np.sqrt(args["buffer"] / float(i + 1)) * 2.5)
+			cv2.line(frame, pts[i - 1], pts[i], (0, 0, 255), thickness)
 
-	# show the frame to our screen
-	cv2.imshow("Frame", frame)
-	# key = cv2.waitKey(1) & 0xFF
+		# show the frame to our screen
+		cv2.imshow("Frame", frame)
+		# key = cv2.waitKey(1) & 0xFF
 
-	# cv2.imshow("Image window", cv_image)
-	cv2.waitKey(3)
+		# cv2.imshow("Image window", cv_image)
+		cv2.waitKey(3)
 
-	try:
-		self.image_pub.publish(self.bridge.cv2_to_imgmsg(frame, "bgr8"))
-	except CvBridgeError as e:
-		print(e)
+		try:
+			self.image_pub.publish(self.bridge.cv2_to_imgmsg(frame, "bgr8"))
+		except CvBridgeError as e:
+			print(e)
 
 
 def degrees2radians(angle):
