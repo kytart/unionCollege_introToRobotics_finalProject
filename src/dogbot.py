@@ -3,7 +3,7 @@ import math
 import rospy
 import tf
 from geometry_msgs.msg import Twist
-from std_msgs.msg import String
+from std_msgs.msg import String, Int16
 from emotions import HAPPY, SAD, EXCITED, MUSIC
 
 COMMAND_TURN_AROUND = 'turn around'
@@ -16,6 +16,20 @@ COMMAND_SHAKE_THAT_BOOTY = 'shake that booty'
 
 pubMove = rospy.Publisher('/cmd_vel_mux/input/teleop', Twist, queue_size=10)
 pubEmotion = rospy.Publisher('/dogbot/emotion', String, queue_size=10)
+
+
+class Vision:
+	def __init__(self):
+		self.x = None
+		self.radius = None
+
+	def set_x(self, x):
+		print x
+		self.x = x
+
+	def set_radius(self, radius):
+		print radius
+		self.radius = radius
 
 
 def calculate_distance(x1, x0, y1, y0):
@@ -132,8 +146,12 @@ def perform_command(command):
 
 
 def init():
+	vision = Vision()
+
 	rospy.init_node('dogbot', anonymous=True)
 	rospy.Subscriber("/dogbot/voice_command", String, perform_command)
+	rospy.Subscriber("x_ball", Int16, vision.set_x)
+	rospy.Subscriber("ball_radius", Int16, vision.set_radius)
 	rospy.spin()
 
 
