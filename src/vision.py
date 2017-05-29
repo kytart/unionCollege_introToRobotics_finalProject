@@ -23,7 +23,6 @@ class image_converter:
 		self.radius_pub = rospy.Publisher("ball_radius", Int16, queue_size=10)
 		self.bridge = CvBridge()
 		self.image_sub = rospy.Subscriber("/camera/rgb/image_raw", Image, self.callback)
-		self.robot = Robot()
 
 	def callback(self, data):
 
