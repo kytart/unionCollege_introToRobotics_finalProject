@@ -5,7 +5,8 @@ A ROS package that makes a turtlebot act like a dog, taking voice commands and v
 
 ## Requirements
 
-* [ROS Indigo or later](http://wiki.ros.org/) 
+* [ROS Indigo or later](http://wiki.ros.org/)
+* [Turtlebot](http://wiki.ros.org/Robots/TurtleBot) or similar moving base
 * Python 2.6, 2.7 or 3.3+
 * Microphone
 * Audio speakers
@@ -23,10 +24,17 @@ sudo pip install -r requirements.txt
 3. Create file `google_api_credentials.json` in the project root directory, that contains your [Google Cloud](https://cloud.google.com/) API credentials in JSON format. 
 You must enable [Google Cloud Speech](https://cloud.google.com/speech/) API in the Google console.
 
+If you have any issues and instructions provided here don't help, try following troubleshooting instructions on [this page](https://pypi.python.org/pypi/SpeechRecognition/). 
 
 ## Launch
 
-Convenient launch file is available. Run command:
+1. Bringup Turtlebot or whatever moving base you are using. In case of Turtlebot use command:
+
+```
+roslaunch turtlebot_bringup minimal.launch
+```
+
+2. Launch Dogbot:
 
 ```
 roslaunch dogbot dogbot.launch
@@ -48,3 +56,26 @@ Dogbot is controlled entirely with voice.
 ### Emotions
 
 Dogbot is not just a robot. It has emotions. To allow Dogbot express emotions, make sure the system audio volume is turned up.
+
+
+## Troubleshooting
+
+### Microphone sensitivity
+
+Depending on what microphone you're using and how it's set in the system, you might need to specify microphone sensitivity.
+When using launch file, `mic_sensitivity` argument is available. Default value is 3000.
+
+```
+roslaunch dogbot dogbot.launch mic_sensitivity:=3000
+```
+
+There are 3 possible scenarios:
+
+* Voice commands are recognized with default microphone sensitivity.
+    * No need to do anything.
+* Speech handler is trying to recognize words even when you're not speaking.
+    * Use higher value for microphone sensitivity.
+* Speech handler doesn't recognize when you're speaking.
+    * Use lower value for microphone sensitivity.
+    
+To debug speech handler, inspect logs. Recognized phrases are logged as debug logs and any errors are logged as errors.
