@@ -239,8 +239,8 @@ def init():
 
 	rospy.init_node('dogbot', anonymous=True)
 	rospy.Subscriber("/dogbot/voice_command", String, perform_command, vision)
-	rospy.Subscriber("/x_ball", Int16, vision.set_x)
-	rospy.Subscriber("/ball_radius", Int16, vision.set_radius)
+	rospy.Subscriber("/dogbot/vision/x", Int16, vision.set_x)
+	rospy.Subscriber("/dogbot/vision/radius", Int16, vision.set_radius)
 
 	rospy.spin()
 

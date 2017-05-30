@@ -17,10 +17,10 @@ class image_converter:
 	def __init__(self):
 
 		self.turtlesim_pose = Pose()
-		self.image_pub = rospy.Publisher("image_topic_2", Image, queue_size=10)
-		self.x_pub = rospy.Publisher("x_ball", Int16, queue_size=10)
-		self.y_pub = rospy.Publisher("y_ball", Int16, queue_size=10)
-		self.radius_pub = rospy.Publisher("ball_radius", Int16, queue_size=10)
+		self.image_pub = rospy.Publisher("/dogbot/vision/image", Image, queue_size=10)
+		self.x_pub = rospy.Publisher("/dogbot/vision/x", Int16, queue_size=10)
+		self.y_pub = rospy.Publisher("/dogbot/vision/y", Int16, queue_size=10)
+		self.radius_pub = rospy.Publisher("/dogbot/vision/radius", Int16, queue_size=10)
 		self.bridge = CvBridge()
 		self.image_sub = rospy.Subscriber("/camera/rgb/image_raw", Image, self.callback)
 
