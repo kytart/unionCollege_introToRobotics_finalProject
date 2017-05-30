@@ -6,5 +6,5 @@
         <param name="mic_sensitivity" type="int" value="$(arg mic_sensitivity)"/>
     </node>
     <node name="dogbot_emotions" pkg="dogbot" type="emotions.py" required="false"/>
-    <node name="vision" pkg="dogbot" type="emotions.py"></node>
+    <node name="vision" pkg="dogbot" type="vision.py"/>
 </launch>
