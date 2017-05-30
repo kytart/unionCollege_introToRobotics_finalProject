@@ -57,6 +57,7 @@ class image_converter:
 		cnts = cv2.findContours(mask.copy(), cv2.RETR_EXTERNAL,
 								cv2.CHAIN_APPROX_SIMPLE)[-2]
 		center = None
+		found = False
 
 		# only proceed if at least one contour was found
 		if len(cnts) > 0:
@@ -69,7 +70,7 @@ class image_converter:
 			center = (int(M["m10"] / M["m00"]), int(M["m01"] / M["m00"]))
 
 			# only proceed if the radius meets a minimum size
-			if radius > 10:
+			if radius > 5:
 				# draw the circle and centroid on the frame,
 				# then update the list of tracked points
 				cv2.circle(frame, (int(x), int(y)), int(radius),
@@ -80,6 +81,10 @@ class image_converter:
 				self.x_pub.publish(int(x) - 300)
 				self.y_pub.publish(int(y) - 200)
 				self.radius_pub.publish(int(radius))
+				found = True
+
+		if not found:
+			self.radius_pub.publish(-1)
 
 		# update the points queue
 		pts.appendleft(center)
