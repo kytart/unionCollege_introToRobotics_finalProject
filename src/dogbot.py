@@ -6,6 +6,7 @@ from geometry_msgs.msg import Twist
 from std_msgs.msg import String, Int16
 from emotions import HAPPY, SAD, EXCITED, MUSIC
 
+# recognized voice command constants
 COMMAND_TURN_AROUND = 'turn around'
 COMMAND_GOOD_BOY = 'good boy'
 COMMAND_COME_HERE = 'come here'
@@ -22,6 +23,7 @@ pubMove = rospy.Publisher('/cmd_vel_mux/input/teleop', Twist, queue_size=10)
 pubEmotion = rospy.Publisher('/dogbot/emotion', String, queue_size=10)
 
 
+# holds current state of vision of the ball
 class Vision:
 	def __init__(self):
 		self.x = None
@@ -34,6 +36,7 @@ class Vision:
 		self.radius = radius.data if radius.data >= 0 else None
 
 
+# helper function to calculate distance between 2 points in 2D space
 def calculate_distance(x1, x0, y1, y0):
 	return math.sqrt((x1 - x0) ** 2 + (y1 - y0) ** 2)
 
@@ -118,30 +121,43 @@ def turn_and_go():
 
 
 def follow_ball(vision):
+	# perceived change in radius of the ball if robot's distance from it changes by 1 meter
 	radius_per_meter = 25
+	# distance tolerance for reaching the ball
 	distance_threshold = 0.1
+	# multiply distance with this to get distance, that the robot should move in one iteration
 	distance_multiplier = 0.4
 
+	# divide visible field into chunks by number of pixels
+	# TODO : if vision published percentage offset instead of pixels, this could be define in a more general way
 	rotation_step = 10
+	# how many degrees should robot rotate per each offset chunk
 	rotation_degrees_per_step = 2.0
+	# degrees offset tolerance
 	rotation_degrees_threshold = 2.0
 
+	# max distance robot can travel in one iteration
 	max_distance = 1.0
+	# mxx angle robot can rotate in one iteration
 	max_angle = math.radians(15.0)
 
 	rate = rospy.Rate(1)
 
 	while not rospy.is_shutdown() and vision.x is not None and vision.radius is not None:
+		# calculate approximate distance from the ball in meters
 		meters_distance = radius_per_meter / vision.radius
+		# calculate approximate degrees offset from the ball
 		degrees_distance = (abs(vision.x) / rotation_step) * rotation_degrees_per_step
 		radians_distance = math.radians(degrees_distance)
 		is_to_the_left = vision.x < 0
 
+		# determine linear speed based on the distance
 		if meters_distance > distance_threshold:
 			linear_speed = meters_distance
 		else:
 			linear_speed = 0.0
 
+		# determine angular speed based on the degrees offset
 		if degrees_distance > rotation_degrees_threshold:
 			angular_speed = math.radians(10.0)
 		else:
@@ -161,35 +177,49 @@ def follow_ball(vision):
 
 		rate.sleep()
 
+	# function ends prematurely, if robot loses track of the ball
+	# if that happened, either x or radius will be None
+	# in that case return False, meaning that the function failed
+	# otherwise return True
 	return vision.x is not None and vision.radius is not None
 
 
+# translate received command to action
 def perform_command(command, vision):
 	if command.data == COMMAND_TURN_AROUND:
 		pubEmotion.publish(EXCITED)
 		rotate(math.radians(180.0), True)
 		rotate(math.radians(180.0), True)
+
 	elif command.data == COMMAND_GOOD_BOY:
 		pubEmotion.publish(HAPPY)
 		dance(math.radians(5.0))
+
 	elif command.data == COMMAND_COME_HERE:
 		pubEmotion.publish(EXCITED)
 		move(1.0, True)
+
 	elif command.data == COMMAND_GO_AWAY:
 		pubEmotion.publish(SAD)
 		rotate(math.radians(180.0), True)
 		move(1.0, True)
+
 	elif command.data == COMMAND_COME_BACK:
 		pubEmotion.publish(HAPPY)
 		rotate(math.radians(180.0), True)
 		move(1.0, True)
+
 	elif command.data == COMMAND_SHAKE_IT or command.data == COMMAND_SHAKE_THAT_BOOTY:
 		pubEmotion.publish(MUSIC)
 		dance(math.radians(5.0))
 		dance(math.radians(5.0))
+
 	elif command.data == COMMAND_FETCH or command.data == COMMAND_SEARCH:
 		pubEmotion.publish(HAPPY)
 		success = False
+
+		# in case follow_ball() fails, add some tolerance
+		# the robot will try 5 times before giving up
 		for x in range(0, 5):
 			success = follow_ball(vision)
 			if success:
