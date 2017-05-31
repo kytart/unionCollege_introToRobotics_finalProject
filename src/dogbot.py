@@ -120,7 +120,7 @@ def turn_and_go():
 	move(1.0, False)
 
 
-def follow_ball(vision):
+def follow_ball(vision, retries=0):
 	# perceived change in radius of the ball if robot's distance from it changes by 1 meter
 	radius_per_meter = 25
 	# distance tolerance for reaching the ball
@@ -181,7 +181,23 @@ def follow_ball(vision):
 	# if that happened, either x or radius will be None
 	# in that case return False, meaning that the function failed
 	# otherwise return True
-	return vision.x is not None and vision.radius is not None
+
+	# but first, if it failed and retries is specified, retry the process. This is to mitigate incorrect reading from the camera.
+	if vision.x is None or vision.radius is None:
+		if retries > 0:
+			return follow_ball(vision, retries - 1)
+		else:
+			return False
+
+	return True
+
+
+def look_for_ball(vision):
+	degrees_rotated = 0
+	step_degrees = 20.0
+	while degrees_rotated < 360 and (vision.x is None or vision.radius is None):
+		rotate(math.radians(step_degrees), True)
+		degrees_rotated += step_degrees
 
 
 # translate received command to action
@@ -216,12 +232,13 @@ def perform_command(command, vision):
 
 	elif command.data == COMMAND_FETCH or command.data == COMMAND_SEARCH:
 		pubEmotion.publish(HAPPY)
+
 		success = False
 
-		# in case follow_ball() fails, add some tolerance
-		# the robot will try 5 times before giving up
-		for x in range(0, 5):
-			success = follow_ball(vision)
+		# try 3 times to look for the ball and then follow it
+		for x in range(0, 3):
+			look_for_ball(vision)
+			success = follow_ball(vision, 5)
 			if success:
 				break
 
