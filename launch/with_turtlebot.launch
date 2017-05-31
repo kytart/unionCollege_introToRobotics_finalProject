@@ -1,5 +1,9 @@
 <launch>
+    <arg name="mic_sensitivity"/>
+
     <include file="$(find turtlebot_bringup)/launch/minimal.launch"/>
     <include file="$(find turtlebot_bringup)/launch/3dsensor.launch"/>
-    <include file="$(find dogbot)/launch/basic.launch" pass_all_args="true"/>
+    <include file="$(find dogbot)/launch/basic.launch">
+        <arg name="mic_sensitivity" value="$(mic_sensitivity)"></arg>
+    </include>
 </launch>
