@@ -1,6 +1,6 @@
 # Union College: CSC-325-01 Intro to Robotics Class - Final Project
 
-A ROS package that makes a turtlebot act like a dog, taking voice commands and visually recognising objects to fetch.
+A ROS package that makes a turtlebot act like a dog, taking voice commands and visually recognizing objects to fetch.
 
 
 ## Requirements
@@ -10,6 +10,7 @@ A ROS package that makes a turtlebot act like a dog, taking voice commands and v
 * Python 2.6, 2.7 or 3.3+
 * Microphone
 * Audio speakers
+* Camera
 
 
 ## Install
@@ -28,16 +29,21 @@ If you have any issues and instructions provided here don't help, try following 
 
 ## Launch
 
-1. Bringup Turtlebot or whatever moving base you are using. In case of Turtlebot use command:
+### With Turtlebot
+
+Run launch file:
 
 ```
-roslaunch turtlebot_bringup minimal.launch
+roslaunch dogbot with_turtlebot.launch
 ```
 
+### With different robot 
+
+1. Launch moving base and camera.
 2. Launch Dogbot:
 
 ```
-roslaunch dogbot dogbot.launch
+roslaunch dogbot basic.launch
 ```
 
 ## Controls
@@ -51,9 +57,14 @@ Dogbot is controlled entirely with voice.
 3. "Come back!" - Dogbot is happy, turns around and moves 1 meter ahead.
 4. "Good boy!" - Dogbot is happy.
 5. "Turn around!" - Dogbot is excited and turns around by 360 degrees.
+7. "Fetch!" or "Search!" - Dogbot is happy and starts chasing the ball.
 6. "Shake it!" or "Shake that booty!" - Bonus secret command.
 
-### Emotions
+
+## Fetching the ball
+
+
+## Emotions
 
 Dogbot is not just a robot. It has emotions. To allow Dogbot express emotions, make sure the system audio volume is turned up.
 
@@ -66,7 +77,9 @@ Depending on what microphone you're using and how it's set in the system, you mi
 When using launch file, `mic_sensitivity` argument is available. Default value is 3000.
 
 ```
-roslaunch dogbot dogbot.launch mic_sensitivity:=3000
+roslaunch dogbot with_turtlebot.launch mic_sensitivity:=3000
+# or
+roslaunch dogbot basic.launch mic_sensitivity:=3000
 ```
 
 There are 3 possible scenarios:
