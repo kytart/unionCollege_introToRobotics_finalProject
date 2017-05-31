@@ -2,7 +2,7 @@
     <arg name="mic_sensitivity" default="3000"/>
 
     <node name="dogbot" pkg="dogbot" type="dogbot.py" output="screen"/>
-    <node name="dogbot_speech_handler" pkg="dogbot" type="speech_handler.py">
+    <node name="dogbot_speech_handler" pkg="dogbot" type="speech_handler.py" output="screen">
         <param name="mic_sensitivity" type="int" value="$(arg mic_sensitivity)"/>
     </node>
     <node name="dogbot_emotions" pkg="dogbot" type="emotions.py" required="false"/>

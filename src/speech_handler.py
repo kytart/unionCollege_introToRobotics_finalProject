@@ -15,6 +15,7 @@ def init():
 	rate = rospy.Rate(1)
 
 	microphone_sensitivity = rospy.get_param('~mic_sensitivity', DEFAULT_MIC_SENSITIVITY)
+	print 'microphone sensitivity: {}'.format(microphone_sensitivity)
 
 	recognizer = sr.Recognizer()
 	recognizer.energy_threshold = microphone_sensitivity
